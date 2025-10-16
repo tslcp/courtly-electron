@@ -1,0 +1,60 @@
+{
+  "name": "courtly-electron",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Electron app with Courtly-like features for tennis tournaments",
+  "main": "electron/main.js",
+  "type": "module",
+  "author": "JiaYou Tennis / Courtly",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "electron-builder install-app-deps",
+    "dev": "concurrently -k \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "build": "vite build",
+    "electron": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0",
+    "lowdb": "^7.0.1",
+    "nanoid": "^5.0.7",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "concurrently": "^8.2.2",
+    "electron": "^30.0.0",
+    "electron-builder": "^24.9.1",
+    "typescript": "^5.4.5",
+    "vite": "^5.0.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.jiayou.courtly",
+    "files": [
+      "dist/**",
+      "electron/**",
+      "node_modules/**",
+      "package.json"
+    ],
+    "asar": true,
+    "mac": {
+      "category": "public.app-category.sports"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Sports"
+    }
+  }
+}
