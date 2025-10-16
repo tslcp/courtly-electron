@@ -28,7 +28,7 @@ async function createWindow () {
 
   if (isDev) {
     await win.loadURL('http://localhost:5173')
-    win.webContents.openDevTools()
+    // DevTools can be opened manually with Cmd+Option+I (Mac) or Ctrl+Shift+I (Windows/Linux)
   } else {
     await win.loadFile(path.join(__dirname, '..', 'dist', 'index.html'))
   }

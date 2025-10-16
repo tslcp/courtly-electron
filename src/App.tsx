@@ -82,6 +82,8 @@ export default function App(){
         if (!d.reservations) d.reservations = []
         if (!d.coaches) d.coaches = []
         if (!d.coachingSessions) d.coachingSessions = []
+        // Always start at home page (no club selected)
+        d.currentClub = undefined
         setDb(d)
       })
       .catch(err => {
