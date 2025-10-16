@@ -577,7 +577,7 @@ function CourtReservations({db, onSave}:{db:DB, onSave:(p:Partial<DB>)=>void}){
     const endISO = new Date(new Date(startDateTime).getTime() + duration * 60000).toISOString()
     const memberName = `${player.firstName} ${player.lastName}`
     const memberContact = player.school || 'N/A'
-    const res: Reservation = { id: nanoid(), courtId, startISO, endISO, memberName, memberContact, notes }
+    const res: Reservation = { id: nanoid(), courtId, startISO, endISO, memberName, memberContact, notes, clubId: db.currentClub!.id }
     onSave({ reservations: [...(db.reservations||[]), res] })
     
     // Update the calendar view to show the date of the new reservation
@@ -605,7 +605,9 @@ function CourtReservations({db, onSave}:{db:DB, onSave:(p:Partial<DB>)=>void}){
     const slotStart = new Date(`${date}T${timeSlot}:00`)
     const slotEnd = new Date(slotStart.getTime() + 60 * 60000) // 1 hour later
 
+    // Filter by current club
     return (db.reservations || []).filter(r => {
+      if (r.clubId !== db.currentClub?.id) return false
       if (r.courtId !== courtId) return false
       const resStart = new Date(r.startISO)
       const resEnd = new Date(r.endISO)
@@ -1084,7 +1086,8 @@ function Coaching({db, onSave}:{db:DB, onSave:(p:Partial<DB>)=>void}){
       durationMin: duration,
       courtId: availableCourtId,
       paid: false,
-      notes
+      notes,
+      clubId: db.currentClub!.id
     }
     
     // Create a court reservation for the coaching session
@@ -1095,7 +1098,8 @@ function Coaching({db, onSave}:{db:DB, onSave:(p:Partial<DB>)=>void}){
       endISO,
       memberName: `${studentName} (Coaching with ${(db.coaches||[]).find(c => c.id === coachId)?.name || 'Coach'})`,
       memberContact: studentContact,
-      notes: `Coaching session: ${notes || 'Private lesson'}`
+      notes: `Coaching session: ${notes || 'Private lesson'}`,
+      clubId: db.currentClub!.id
     }
     
     // Save both the coaching session and the court reservation
@@ -1477,7 +1481,11 @@ function Coaching({db, onSave}:{db:DB, onSave:(p:Partial<DB>)=>void}){
         Scheduled Sessions
       </h3>
       
-      {(!db.coachingSessions || db.coachingSessions.length === 0) ? (
+      {/* Filter coaching sessions by current club */}
+      {(() => {
+        const clubSessions = (db.coachingSessions||[]).filter(s => s.clubId === db.currentClub?.id)
+        
+        return (!clubSessions || clubSessions.length === 0) ? (
         <div style={{
           padding: 40,
           textAlign: 'center',
@@ -1490,7 +1498,7 @@ function Coaching({db, onSave}:{db:DB, onSave:(p:Partial<DB>)=>void}){
         </div>
       ) : (
         <div style={{display:'grid', gap:12}}>
-          {(db.coachingSessions||[]).sort((a,b)=>a.startISO.localeCompare(b.startISO)).map(s=>{
+          {clubSessions.sort((a,b)=>a.startISO.localeCompare(b.startISO)).map(s=>{
             const coach = (db.coaches||[]).find(c=>c.id===s.coachId)
             const court = s.courtId ? db.settings.courts.find(c=>c.id===s.courtId) : null
             return <div 
@@ -1570,7 +1578,8 @@ function Coaching({db, onSave}:{db:DB, onSave:(p:Partial<DB>)=>void}){
             </div>
           })}
         </div>
-      )}
+      )
+      })()}
     </div>
   </div>
 }

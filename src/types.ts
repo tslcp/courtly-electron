@@ -50,6 +50,7 @@ export type Reservation = {
   memberName: string
   memberContact: string
   notes?: string
+  clubId: string  // Track which club this reservation belongs to
 }
 
 export type Coach = {
@@ -70,6 +71,7 @@ export type CoachingSession = {
   courtId?: number
   paid: boolean
   notes?: string
+  clubId: string  // Track which club this session belongs to
 }
 
 export type ShopItem = {

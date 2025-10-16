@@ -155,6 +155,28 @@ function readDb() {
       })
     }
     
+    // Add clubId to existing reservations
+    if (db.reservations && db.reservations.length > 0) {
+      const defaultClubId = db.currentClub?.id || '1'
+      db.reservations = db.reservations.map(reservation => {
+        if (!reservation.clubId) {
+          return { ...reservation, clubId: defaultClubId }
+        }
+        return reservation
+      })
+    }
+    
+    // Add clubId to existing coaching sessions
+    if (db.coachingSessions && db.coachingSessions.length > 0) {
+      const defaultClubId = db.currentClub?.id || '1'
+      db.coachingSessions = db.coachingSessions.map(session => {
+        if (!session.clubId) {
+          return { ...session, clubId: defaultClubId }
+        }
+        return session
+      })
+    }
+    
     // Update version
     db.meta = { ...db.meta, version: 2, updatedAt: new Date().toISOString() }
     
